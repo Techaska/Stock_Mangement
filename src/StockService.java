@@ -1,100 +1,59 @@
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.sql.SQLException;
+import java.util.List;
 
 public class StockService {
 
-    private final ArrayList<Stock> stocks = new ArrayList<>();
+    private final StockRepository stockRepository;
 
-    // Add stock
-
-    public void addStock(Stock... stocks) {
-        for (Stock stock : stocks) {
-            this.stocks.add(stock);
-        }
+    public StockService() {
+        this.stockRepository = new StockRepository();
     }
 
+    // Add one or multiple stock items
+    public void addStock(Stock... stocks) throws SQLException {
+        for (Stock stock : stocks) {
+            if (stock.getStock_quantity() < 0) {
+                throw new IllegalArgumentException(
+                        "Quantity cannot be negative");
+            }
+
+            stockRepository.addStock(stock);
+            System.out.println("Stock records inserted.");
+        }
+    }
+    
 
     // View all stock
-    public void getStocks() {
-        for (Stock stock : stocks) {
-            System.out.println(stock);
-        }
+    public List<Stock> getStocks() throws SQLException {
+
+        return stockRepository.getStocks();
     }
 
-    // Search stock
-    public Stock searchStock(long stockId) {
-
-        if (stocks.isEmpty()) {
-            System.out.println("No stocks found");
-            return null;
-        }
-
-        for (Stock stock : stocks) {
-            if (stock.getStock_id() == stockId) {
-                return stock;
-            }
-        }
-
-        System.out.println("Stock not found");
-        return null;
+    // Search by ID
+    public Stock searchStock(long stockId) throws SQLException {
+        return stockRepository.searchStock(stockId);
     }
 
-    public Stock searchStock(String stockade) {
-
-        if (stocks.isEmpty()) {
-            System.out.println("No stocks found");
-            return null;
-        }
-
-        for (Stock stock : stocks) {
-            if (stock.getStock_name().equals(stockade)) {
-                return stock;
-            }
-        }
-
-        System.out.println("Stock not found");
-        return null;
+    // Search by name
+    public List<Stock> searchStock(String stockName)
+            throws SQLException {
+        return stockRepository.searchStock(stockName);
     }
-
 
     // Delete stock
-
-    public boolean deleteStock(long stockId) {
-
-        if (stocks.isEmpty()) {
-            System.out.println("No stocks found");
-            return false;
-        }
-
-        for (Stock stock : stocks) {
-            if (stock.getStock_id() == stockId) {
-                stocks.remove(stock);
-                return true;
-            }
-        }
-
-        System.out.println("Stock not found");
-        return false;
+    public boolean deleteStock(long stockId) throws SQLException {
+        return stockRepository.deleteStock(stockId);
     }
 
-
-    // Update stock
-    public boolean updateStock(long stockId, long newQuantity) {
-
-        if (stocks.isEmpty()) {
-            System.out.println("No stocks found");
-            return false;
+    // Update quantity
+    public boolean updateStock(long stockId, long newQuantity)
+            throws SQLException {
+        if (newQuantity < 0) {
+            throw new IllegalArgumentException(
+                    "Quantity cannot be negative");
         }
 
-        for (Stock stock : stocks) {
-            if (stock.getStock_id() == stockId) {
-                stock.setStock_quantity(newQuantity);
-                return true;
-            }
-        }
-
-        System.out.println("Stock not found");
-        return false;
+        return stockRepository.updateStock(stockId, newQuantity);
     }
 }

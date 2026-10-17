@@ -7,11 +7,9 @@ public class Stock {
     private long stock_quantity;
     private String stock_type;
 
-    public Stock(long stock_id, String stock_name,
+    public Stock(String stock_name,
                  double stock_price, long stock_quantity,
                  String stock_type) {
-
-        this.stock_id = stock_id;
         this.stock_name = stock_name;
         this.stock_price = stock_price;
         this.stock_quantity = stock_quantity;
